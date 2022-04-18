@@ -8,6 +8,7 @@
 #include "tindbuff.h"
 #include "textind.h"
 #include "indfile.h"
+#include "student.h"
 
 /*
 Using class Index, the index object should be stored into the RecordFile
@@ -24,7 +25,7 @@ int main(int argc, char ** argv)
 
 	TextIndex RecIndex(10);
 
-	TextIndexedFile<Student> IndFile(Buffer, 12, 10);
+	TextIndexedFile<Student> IndFile(Buff, 12, 10);
 	cout << "Testing TextIndex Buffer" << endl;
 	TextIndexBuffer Buff(10, 3, 0, 0);
 	Buff.Init(2);
@@ -158,6 +159,8 @@ int main(int argc, char ** argv)
 				cout << "Unable to read IndFile \"" << indFileName << "\"" << endl;
 				return -1;
 			}
+
+			char* key;
 
 			cin >> key;
 			cout << "select " << key << " at recaddr " << RecIndex.Search(key) << endl;

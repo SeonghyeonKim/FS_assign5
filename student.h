@@ -11,12 +11,91 @@ public:
 	Student();
 	friend std::istream& operator >> (std::istream& stream, Student& s);
 	friend std::ostream& operator << (std::ostream& stream, Student& s);
+
+	static int InitBuffer(FixedFieldBuffer& Buffer);
+	void Print(ostream&, char*) const;
+	void Clear();
+	int Pack(IOBuffer&) const;
+	int Unpack(IOBuffer&);
 };
 
 Student::Student() {
 	Id[0] = 0; Name[0] = 0; Address[0] = 0;
 	DateEnroll[0] = 0; temp[0] = 0; NumberCredit = 0;
 }
+
+int Student::InitBuffer(FixedFieldBuffer& Buffer)
+// initialize a FixedFieldBuffer to be used for Students
+{
+	int result;
+	result = Buffer.AddField(10); // Id [11];
+	result = result && Buffer.AddField(10); // Name [11];
+	result = result && Buffer.AddField(15); // Address [16];
+	result = result && Buffer.AddField(15); // Date [16];
+	result = result && Buffer.AddField(15); // Credit;
+	return result;
+}
+
+void Student::Print(ostream& stream, char* label = 0) const
+{
+	if (label == 0) stream << "Student";
+	else stream << label;
+	stream << "\n\t  Id '" << Id << "'\n"
+		<< "\t Name '" << Name << "'\n"
+		<< "\t    Address '" << Address << "'\n"
+		<< "\t       Date '" << DateEnroll << "'\n"
+		<< "\t   Credit '" << temp << "'\n" << flush;
+}
+
+void Student::Clear()
+{
+	// set each field to an empty string
+	Id[0] = 0; Name[0] = 0; Address[0] = 0;
+	DateEnroll[0] = 0; temp[0] = 0; NumberCredit = 0;
+}
+
+int Student::Pack(IOBuffer& Buffer) const
+{// pack the fields into a FixedFieldBuffer, 
+ // return TRUE if all succeed, FALSE o/w
+	int numBytes;
+	Buffer.Clear();
+	numBytes = Buffer.Pack(Id);//동적 바인딩
+	if (numBytes == -1) return FALSE;
+	numBytes = Buffer.Pack(Name);
+	if (numBytes == -1) return FALSE;
+	numBytes = Buffer.Pack(Address);
+	if (numBytes == -1) return FALSE;
+	numBytes = Buffer.Pack(DateEnroll);
+	if (numBytes == -1) return FALSE;
+	numBytes = Buffer.Pack(temp);
+	if (numBytes == -1) return FALSE;
+	return TRUE;
+}
+
+int Student::Unpack(IOBuffer& Buffer)
+{
+	Clear();
+	int numBytes;
+	//power of virtual functions
+	numBytes = Buffer.Unpack(Id);//Unpack()에 대항 F12를 누르면 일치하는 3개 함수 존재 - 동적 바인딩
+	if (numBytes == -1) return FALSE;
+	Id[numBytes] = 0;
+	numBytes = Buffer.Unpack(Name);
+	if (numBytes == -1) return FALSE;
+	Name[numBytes] = 0;
+	numBytes = Buffer.Unpack(Address);
+	if (numBytes == -1) return FALSE;
+	Address[numBytes] = 0;
+	numBytes = Buffer.Unpack(DateEnroll);
+	if (numBytes == -1) return FALSE;
+	DateEnroll[numBytes] = 0;
+	numBytes = Buffer.Unpack(temp);
+	if (numBytes == -1) return FALSE;
+	temp[numBytes] = 0;
+
+	return TRUE;
+}
+
 
 #endif
 
